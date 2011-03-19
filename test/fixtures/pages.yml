@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+home:
+  slug:
+  title: Landlord
+  floor: 1
+home2e:
+  slug:
+  title: Landlord2e
+  floor: 2
+  direction: E
+home2w:
+  slug:
+  title: Landlord2w
+  floor: 2
+  direction: W
