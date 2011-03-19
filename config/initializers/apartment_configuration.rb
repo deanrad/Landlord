@@ -6,3 +6,5 @@ Apartment.setup do
   #partition :published,  :boolean, :values => [true, false]
   #partition :visibility, :integer, :values => [1,2,3]
 end
+
+Apartment.tenants = [Page]

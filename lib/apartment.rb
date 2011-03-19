@@ -4,6 +4,7 @@ class Apartment
     attr_accessor :partitions
 
     def setup &block
+      @partitions = {}
       instance_eval &block
     end
 
@@ -16,7 +17,6 @@ class Apartment
     
     
     def setup_partition name, type, opts
-      @partitions ||= {}
       @partitions.store(name, {:type => type, :opts => opts})
     end
   end
@@ -24,9 +24,20 @@ class Apartment
 
   # Class
   class << self
-    attr_accessor :current
+    # The classes who are lessees 
+    attr_accessor :tenants
     
-    def set_current= apt
+    def with apt, &block
+      saved = current && current.dup
+      self.current= apt
+      yield
+    ensure
+      self.current= saved
+    end
+    
+    attr_accessor :current
+    def current= apt
+      return clear_current if apt.nil?
       all_keys = partitions.keys.inject(true) do |all, v|
         apt.keys.include?(v)
       end
@@ -38,17 +49,19 @@ class Apartment
             raise "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{values.inspect}" 
           end
         # Works, but causes a class load too early, conflicting with Apartments
-        # elsif fk = opts[:opts][:references]
-        #   klass, field = fk.split('#')
-        #   unless const_get(klass).send( "find_by_#{field}", apt[name])
-        #     raise "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{klass}##{field}" 
-        #   end
+        elsif fk = opts[:opts][:references]
+          klass, field = fk.split('#')
+          unless const_get(klass).send( "find_by_#{field}", apt[name])
+            raise "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{klass}##{field}" 
+          end
         end
       end
       
       @current = apt
     end
-    alias :current= :set_current=
+    def clear_current
+      @current = nil
+    end
     
   end
   # End Instance

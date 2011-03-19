@@ -14,9 +14,6 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 # Deploy with Capistrano
 # gem 'capistrano'
 
-# To use debugger
-# gem 'ruby-debug'
-
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'
@@ -29,4 +26,6 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 group :development, :test do
   gem 'rspec', '~> 2.5.0'
   gem 'rspec-rails', '~> 2.5.0'
+  #gem 'ruby-debug'
+
 end
