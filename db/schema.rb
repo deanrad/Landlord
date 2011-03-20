@@ -18,8 +18,7 @@ ActiveRecord::Schema.define(:version => 20110319031001) do
     t.datetime "updated_at"
   end
 
-  create_table "pages", :force => true do |t|
-    t.string   "slug"
+  create_table "units", :force => true do |t|
     t.string   "title"
     t.integer  "floor"
     t.string   "direction"

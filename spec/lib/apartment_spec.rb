@@ -7,12 +7,12 @@ describe Apartment do
       partition :direction,  :values => %w(E W), :allow_nil => true
     end
     Floor.find_or_create_by_number(1)
-    Apartment.tenants = [Page]
-    Page.destroy_all
+    Apartment.tenants = [Unit]
+    Unit.destroy_all
   end
   after(:each) do
     Apartment.current = nil
-    Page.destroy_all
+    Unit.destroy_all
   end
   
   describe 'Valid Usage' do
@@ -39,16 +39,16 @@ describe Apartment do
     end
     describe 'tenants' do
       it 'should allow an explicit list' do
-        t = [Page]
+        t = [Unit]
         Apartment.tenants = t
         Apartment.tenants.should == t
       end
       it 'should allow :all_models' do
         Apartment.tenants = :all_models
-        [Page, Floor].each do |k|
+        [Unit, Floor].each do |k|
           Apartment.tenants.should include(k)
         end
-        Apartment.tenants = [Page]
+        Apartment.tenants = [Unit]
       end
     end
   end
@@ -56,7 +56,7 @@ describe Apartment do
   describe 'Internals' do
     it 'should change the where_values_hash on the Thread local variable Model_scoped_methods' do
       Apartment.current = {:floor => 1}
-      arel = Thread.current[:Page_scoped_methods].first
+      arel = Thread.current[:Unit_scoped_methods].first
       arel.should be_kind_of(ActiveRecord::Relation)
       arel.where_values_hash.should == {:floor => 1}
       arel.scope_for_create.should == {:floor => 1}
@@ -65,19 +65,19 @@ describe Apartment do
   
   describe 'its limiting effect on data' do
     before(:each) do
-      [1,2].each{ |i| Page.create(:title => "#{i}E", :floor => i, :direction => 'E') }
-      Page.create(:title => 'Floor 1 Whole Unit', :floor => 1) # no direction
-      Page.create(:title => '1W', :floor => 1, :direction => 'W')
+      [1,2].each{ |i| Unit.create(:title => "#{i}E", :floor => i, :direction => 'E') }
+      Unit.create(:title => 'Floor 1 Whole Unit', :floor => 1) # no direction
+      Unit.create(:title => '1W', :floor => 1, :direction => 'W')
     end
     after(:each) do
-      Page.destroy_all
+      Unit.destroy_all
     end
     it 'should limit the scope of \'all\'' do
       Apartment.with(:floor => 1, :direction => 'E') do
-        Page.all.count.should == 1
+        Unit.all.count.should == 1
       end
       Apartment.with(nil) do
-        Page.all.count.should == 4
+        Unit.all.count.should == 4
       end
     end
     
@@ -86,22 +86,22 @@ describe Apartment do
       Apartment.current = {:floor => 1, :direction => 'E'}
     
       # and it remains in effect
-      Page.all.count.should == 1
+      Unit.all.count.should == 1
 
       # until turned off
       Apartment.current = nil
-      Page.all.count.should == 4
+      Unit.all.count.should == 4
     end
     
     it 'should allow further chaining of scopes' do
       Apartment.current = {:floor => 1, :direction => 'W'}
-      Page.all.count.should == 1
-      Page.where(:title => '1W').count.should == 1
+      Unit.all.count.should == 1
+      Unit.where(:title => '1W').count.should == 1
     end
     
     it 'should work with creating new records bound to that apartment' do 
       Apartment.with( :floor => 1, :direction => 'W') do
-        p = Page.create!(:title => 'Hi dere')
+        p = Unit.create!(:title => 'Hi dere')
         [p.floor, p.direction].should == [1,'W']
       end
     end
@@ -115,11 +115,11 @@ describe Apartment do
     end
 
     it 'should be turn-offable at the programmers discretion' do
-      unscoped_page_count = Apartment.with(nil){ Page.all.count }
+      unscoped_unit_count = Apartment.with(nil){ Unit.all.count }
       Apartment.current = {:floor => 1}
-      Page.all.count.should < unscoped_page_count
+      Unit.all.count.should < unscoped_unit_count
       # unscoped is a native ActiveRecord facility
-      Page.unscoped{ Page.all.count }.should == unscoped_page_count
+      Unit.unscoped{ Unit.all.count }.should == unscoped_unit_count
     end
     
     it 'should work with default scopes' # yes, but Landlord will clobber keys of the default scope which overlap

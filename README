@@ -2,11 +2,27 @@ Landlord
 
 Landlord is an API for creating 'apartments' - scopes of data partitioned by one or more values- in other words 
 multi-tenancy. 
+Configuration DSL:
+
+Apartment.setup do
+  partition :floor,      :references => 'Floor#number', 
+                         :allow_nil => false,
+                         :http_initializer => lambda{ |req| req.params[:floor] || (req.host =~ /floor(\d)\..*/; $1) || 1 }
+                         
+  partition :direction,  :values => %w(E W), 
+                         :allow_nil => true
+end
+
+Usage:
+
+Apartment.current = {:floor => 2}
+Units.all.count 
+# Unit Load (0.4ms)  SELECT "units".* FROM "units" WHERE ("units"."floor" = 2)
 
 Internals:
 
 The thing we hack is 
-  Thread.current[:Page_scoped_methods] , or 
+  Thread.current[:Unit_scoped_methods] , or 
   Thread.current[:"#{klass.name}_scoped_methods"] in general
   
 Which ActiveRecord consults on any call to querying any scope of any model.
@@ -14,30 +30,30 @@ Which ActiveRecord consults on any call to querying any scope of any model.
 Example:
 
 ActiveRecord expects to find an Array of ActiveRecord::Relation objects.
-> Thread.current[:Page_scoped_methods] 
+> Thread.current[:Unit_scoped_methods] 
 => nil
-> Page.all.count
+> Unit.all.count
 => 3
 
-> Thread.current[:Page_scoped_methods] = [ActiveRecord::Relation.new( Page, Arel::Table.new( Page.table_name, Arel::Table.engine ) ).where(:floor => 1)]
- => [[#<Page … # the relation is fetched and enumerated upon going to #inspect
+> Thread.current[:Unit_scoped_methods] = [ActiveRecord::Relation.new( Unit, Arel::Table.new( Unit.table_name, Arel::Table.engine ) ).where(:floor => 1)]
+ => [[#<Unit … # the relation is fetched and enumerated upon going to #inspect
 
-> Page.all.count
+> Unit.all.count
 => 1
 #
-#  Page Load (0.4ms)  SELECT "pages".* FROM "pages" WHERE ("pages"."floor" = 1)
+#  Unit Load (0.4ms)  SELECT "Units".* FROM "Units" WHERE ("Units"."floor" = 1)
 
-> Thread.current[:Page_scoped_methods] = [ActiveRecord::Relation.new( Page, Arel::Table.new( Page.table_name, Arel::Table.engine ) ).where(:floor => 2)]
- => [[#<Page … # the relation is fetched and enumerated upon going to #inspect
+> Thread.current[:Unit_scoped_methods] = [ActiveRecord::Relation.new( Unit, Arel::Table.new( Unit.table_name, Arel::Table.engine ) ).where(:floor => 2)]
+ => [[#<Unit … # the relation is fetched and enumerated upon going to #inspect
 
-> Page.all.count
+> Unit.all.count
 => 2
 #
-# Page Load (0.5ms)  SELECT "pages".* FROM "pages" WHERE ("pages"."floor" = 2)
-> Page.where(:direction => 'E').count
+# Unit Load (0.5ms)  SELECT "Units".* FROM "Units" WHERE ("Units"."floor" = 2)
+> Unit.where(:direction => 'E').count
 => 1
 #
-# SELECT COUNT(*) AS count_id FROM (SELECT 1 FROM "pages" WHERE ("pages"."floor" = 2) AND ("pages"."direction" = 'E')) AS subquery
+# SELECT COUNT(*) AS count_id FROM (SELECT 1 FROM "Units" WHERE ("Units"."floor" = 2) AND ("Units"."direction" = 'E')) AS subquery
 
 
  

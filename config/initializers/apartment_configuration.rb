@@ -1,7 +1,11 @@
 require 'apartment'
 Apartment.setup do
-  partition :floor,      :references => 'Floor#number',  
-                         :request_proc => lambda{|req| req.params[:floor] || (req.host =~ /floor(\d)\..*/; $1) || 1 } 
+  partition :floor,      :references => 'Floor#number', 
+                         :allow_nil => false,
+                         :http_initializer => lambda{ |req| 
+                            req.params[:floor] || (req.host =~ /floor(\d)\..*/; $1) || 1 
+                          }
+                            
                          
   partition :direction,  :values => %w(E W), 
                          :allow_nil => true
@@ -10,4 +14,4 @@ Apartment.setup do
   #partition :visibility, :values => [1,2,3]
 end
 
-Apartment.tenants = [Page] # :all_models
+Apartment.tenants = [Unit] # :all_models

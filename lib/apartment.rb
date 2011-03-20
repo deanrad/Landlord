@@ -53,7 +53,7 @@ class Apartment
     def from_request request
       {}.tap do |apt|
         partitions.each do |name, opts|
-          if proc = opts[:opts][:request_proc]
+          if proc = opts[:opts][:http_initializer]
             apt[name] = proc.call(request)
           end
         end

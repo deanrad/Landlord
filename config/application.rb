@@ -13,8 +13,3 @@ module Landlord
     config.filter_parameters += [:password]
   end
 end
-
-ActionDispatch::Callbacks.before do |cb|
-  # damn, we dont have the request here ! 
-  # $stderr.puts request.params.inspect
-end

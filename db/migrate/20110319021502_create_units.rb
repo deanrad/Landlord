@@ -1,7 +1,6 @@
-class CreatePages < ActiveRecord::Migration
+class CreateUnits < ActiveRecord::Migration
   def self.up
-    create_table :pages do |t|
-      t.string :slug
+    create_table :units do |t|
       t.string :title
 
       t.integer :floor
@@ -11,6 +10,6 @@ class CreatePages < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :pages
+    drop_table :units
   end
 end

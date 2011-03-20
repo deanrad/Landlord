@@ -1,0 +1,13 @@
+Landlord vs IB Security - Comparison points
+
+- Landlord makes it easy and consistent to a) find out your scope, b) query with no scope
+- Fewer LOC in Landlord - Security is (299+148+64 = 501) Landlord is (102+35+17 = 157), though thats expected to grow
+- Landlord has a cute naming convention (which means you'll actually be able to remember how it works)
+- Landlord does not rely on intercepting rails calls - it just populates the data structures that rails calls use - no rails methods are actually overridden ! 
+- Landlord defines the partitions in a configuration file, so is generalizable
+- Landlord validates the settings given to it
+- Landlord does not do SQL concatenation
+- Landlord lets you make an explicit mapping of an HTTP request to security parameters
+- Landlord owes alot to the work of Tim G and all who helped make IB Security work as well as it does. 
+
+
