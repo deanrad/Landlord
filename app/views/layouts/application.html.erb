@@ -12,7 +12,7 @@
 
 <div id="notaspie">
   <pre>
-  <%=
+  <%#
     String.new.tap do |ivs|
       instance_variables.each do |v|
         ivs << "#{v}: #{ instance_variable_get(v) }\n"

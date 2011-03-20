@@ -49,6 +49,17 @@ class Apartment
       self.current= saved
     end
     
+    # constructs a hash suitable for passing to Apartment.current from a request object
+    def from_request request
+      {}.tap do |apt|
+        partitions.each do |name, opts|
+          if proc = opts[:opts][:request_proc]
+            apt[name] = proc.call(request)
+          end
+        end
+      end
+    end
+    
     attr_accessor :current
     def current= apt
       # $stderr.puts "Apartment::current=: #{apt.inspect}"

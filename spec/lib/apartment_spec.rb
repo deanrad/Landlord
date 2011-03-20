@@ -100,11 +100,9 @@ describe Apartment do
     end
     
     it 'should work with creating new records bound to that apartment' do 
-      p= nil
       Apartment.with( :floor => 1, :direction => 'W') do
         p = Page.create!(:title => 'Hi dere')
         [p.floor, p.direction].should == [1,'W']
-        [p.floor, p.direction].should == Apartment.current.values
       end
     end
 
