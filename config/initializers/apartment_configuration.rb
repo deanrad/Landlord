@@ -1,7 +1,7 @@
 require 'apartment'
 Apartment.setup do
   partition :floor,      :references => 'Floor#number',  
-                         :request_proc => lambda{|req| req.params[:floor]}
+                         :request_proc => lambda{|req| req.params[:floor] || (req.host =~ /floor(\d)\..*/; $1) || 1 } 
                          
   partition :direction,  :values => %w(E W), 
                          :allow_nil => true
