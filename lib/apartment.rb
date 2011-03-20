@@ -1,4 +1,9 @@
 class Apartment
+  class InvalidError < StandardError
+    class ReferenceError < self; end
+    class ValueError < self; end
+  end
+
   # DSL
   class << self
     attr_accessor :partitions
@@ -10,14 +15,14 @@ class Apartment
 
     private
 
-    def partition name, type, opts
-      setup_partition name, type, opts
-      puts "Setting Up Partition:#{name} (#{type}): #{opts}"
+    def partition name, opts
+      setup_partition name, opts
+      puts "Setting Up Partition:#{name}: #{opts}"
     end
     
     
-    def setup_partition name, type, opts
-      @partitions.store(name, {:type => type, :opts => opts})
+    def setup_partition name, opts
+      @partitions.store(name, {:opts => opts})
     end
   end
   # End DSL
@@ -26,6 +31,15 @@ class Apartment
   class << self
     # The classes who are lessees 
     attr_accessor :tenants
+    def tenants= ts
+      case ts
+      when :all_models
+        Dir[ File.join(Rails.root, 'app/models/**/*.rb') ].each{ |m| require m }
+        @tenants = ActiveRecord::Base.descendants
+      else
+        @tenants = ts
+      end
+    end
     
     def with apt, &block
       saved = current && current.dup
@@ -37,28 +51,33 @@ class Apartment
     
     attr_accessor :current
     def current= apt
-      return clear_current if apt.nil?
-      all_keys = partitions.keys.inject(true) do |all, v|
-        apt.keys.include?(v)
-      end
-      raise "An apartment must specify all keys: #{partitions.keys.map(&:to_s).to_sentence }" unless all_keys
+      # $stderr.puts "Apartment::current=: #{apt.inspect}"
+      
+      # May want to enable this with a config flag
+      #return clear_current if apt.nil?
+      #all_keys = partitions.keys.inject(true) do |all, v|
+      #  apt.keys.include?(v)
+      #end
+      #raise InvalidError, "An apartment must specify all keys: #{partitions.keys.map(&:to_s).to_sentence }" unless all_keys
 
       partitions.each do | name, opts |
         if values = opts[:opts][:values]
+          next if apt[name].nil? && opts[:opts][:allow_nil]
           unless values.include?( apt[name] )
-            raise "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{values.inspect}" 
+            raise InvalidError::ValueError, "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{values.inspect}" 
           end
         # Works, but causes a class load too early, conflicting with Apartments
         elsif fk = opts[:opts][:references]
           klass, field = fk.split('#')
           unless const_get(klass).send( "find_by_#{field}", apt[name])
-            raise "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{klass}##{field}" 
+            raise InvalidError::ReferenceError, "#{apt[name]} is not a valid value for Apartment #{name}, defined by #{klass}##{field}" 
           end
         end
-      end
+      end unless apt.blank?
       
       @current = apt
     end
+    
     def clear_current
       @current = nil
     end
@@ -68,6 +87,5 @@ class Apartment
   
   # Instance
   attr_accessor :name
-  attr_accessor :type 
   # End Instance
 end

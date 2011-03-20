@@ -1,10 +1,10 @@
 require 'apartment'
 Apartment.setup do
-  partition :floor,      :integer, :references => 'Floor#number'
-  partition :direction,  :string,  :values => %w(E W) 
-  #partition :owner,      :integer, :references => 'Owner#id'
-  #partition :published,  :boolean, :values => [true, false]
-  #partition :visibility, :integer, :values => [1,2,3]
+  partition :floor,      :references => 'Floor#number'
+  partition :direction,  :values => %w(E W), :allow_nil => true
+  #partition :owner,      :references => 'Owner#id'
+  #partition :published,  :values => [true, false]
+  #partition :visibility, :values => [1,2,3]
 end
 
-Apartment.tenants = [Page]
+Apartment.tenants = [Page] # :all_models
