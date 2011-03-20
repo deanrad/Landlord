@@ -14,4 +14,5 @@ Apartment.setup do
   #partition :visibility, :values => [1,2,3]
 end
 
-Apartment.tenants = [Unit] # :all_models
+Apartment.tenants = :all_models
+Apartment.tenants -= [Floor]
