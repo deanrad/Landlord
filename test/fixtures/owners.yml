@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+# [1,2].each{ |i| Unit.create(:title => "#{i}E", :floor => i, :direction => 'E') }
+# Unit.create(:title => 'Floor 3 Whole Unit', :floor => 3) # no direction
+# Unit.create(:title => '1W', :floor => 1, :direction => 'W')
+
+bob:
+  first_name: Bob
+  units: one_east, penthouse
+  

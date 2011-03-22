@@ -17,6 +17,7 @@ class Apartment
         end
       end
     end
+    # TODO probably should clear the AR query cache
   end
   
   module ControllerDetection

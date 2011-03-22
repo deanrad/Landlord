@@ -66,7 +66,7 @@ describe Apartment do
   describe 'its limiting effect on data' do
     before(:each) do
       [1,2].each{ |i| Unit.create(:title => "#{i}E", :floor => i, :direction => 'E') }
-      Unit.create(:title => 'Floor 1 Whole Unit', :floor => 1) # no direction
+      Unit.create(:title => 'Floor 3 Whole Unit', :floor => 3) # no direction
       Unit.create(:title => '1W', :floor => 1, :direction => 'W')
     end
     after(:each) do

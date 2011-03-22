@@ -15,4 +15,4 @@ Apartment.setup do
 end
 
 Apartment.tenants = :all_models
-Apartment.tenants -= [Floor]
+Apartment.tenants -= [Floor, Owner]
