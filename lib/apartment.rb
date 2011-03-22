@@ -35,7 +35,7 @@ class Apartment
       case ts
       when :all_models
         Dir[ File.join(Rails.root, 'app/models/**/*.rb') ].each{ |m| require m }
-        @tenants = ActiveRecord::Base.descendants
+        @tenants = ActiveRecord::Base.send(:subclasses)
       else
         @tenants = ts
       end

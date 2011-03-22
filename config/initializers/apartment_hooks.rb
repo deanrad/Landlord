@@ -10,10 +10,10 @@ class Apartment
         if apt.blank?
           Thread.current[:"#{t}_scoped_methods"] = []
         else
-          newarel = apt.inject(ActiveRecord::Relation.new(t, Arel::Table.new( t.table_name, Arel::Table.engine ))) do |arel, (k,v)|
-            arel = arel.where({k => v})
+          conditions = apt.inject({}) do |part, (k,v)|
+            part[k] = v; part
           end
-          Thread.current[:"#{t}_scoped_methods"] = [newarel]
+          Thread.current[:"#{t}_scoped_methods"] = [{:find=>{:conditions=>conditions.dup}, :create=>conditions.dup}]
         end
       end
     end
