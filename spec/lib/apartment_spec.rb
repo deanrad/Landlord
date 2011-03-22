@@ -57,9 +57,9 @@ describe Apartment do
     it 'should change the where_values_hash on the Thread local variable Model_scoped_methods' do
       Apartment.current = {:floor => 1}
       arel = Thread.current[:Unit_scoped_methods].first
-      arel.should be_kind_of(ActiveRecord::Relation)
-      arel.where_values_hash.should == {:floor => 1}
-      arel.scope_for_create.should == {:floor => 1}
+      arel.should be_kind_of(Hash)
+      arel[:find][:conditions].should == {:floor => 1}
+      arel[:create].should == {:floor => 1}
     end
   end
   
@@ -96,7 +96,7 @@ describe Apartment do
     it 'should allow further chaining of scopes' do
       Apartment.current = {:floor => 1, :direction => 'W'}
       Unit.all.count.should == 1
-      Unit.where(:title => '1W').count.should == 1
+      Unit.scoped(:conditions => {:title => '1W'}).count.should == 1
     end
     
     it 'should work with creating new records bound to that apartment' do 
@@ -118,8 +118,7 @@ describe Apartment do
       unscoped_unit_count = Apartment.with(nil){ Unit.all.count }
       Apartment.current = {:floor => 1}
       Unit.all.count.should < unscoped_unit_count
-      # unscoped is a native ActiveRecord facility
-      Unit.unscoped{ Unit.all.count }.should == unscoped_unit_count
+      Unit.send(:with_exclusive_scope){ Unit.all.count }.should == unscoped_unit_count
     end
     
     it 'should work with default scopes' # yes, but Landlord will clobber keys of the default scope which overlap
