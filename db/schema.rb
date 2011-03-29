@@ -10,12 +10,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110319031001) do
+ActiveRecord::Schema.define(:version => 20110322175508) do
 
   create_table "floors", :force => true do |t|
     t.integer  "number"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "owners", :force => true do |t|
+    t.string   "first_name"
+    t.string   "last_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "owners_units", :id => false, :force => true do |t|
+    t.integer "owner_id"
+    t.integer "unit_id"
   end
 
   create_table "units", :force => true do |t|

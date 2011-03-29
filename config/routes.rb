@@ -1,4 +1,6 @@
 Landlord::Application.routes.draw do
+  resources :owners
+
   resources :units
 
   # The priority is based upon order of creation:
