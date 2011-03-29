@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Apartment do
-  before(:all) do
+  before(:each) do
     Apartment.setup do
       partition :floor,      :references => 'Floor#number'
       partition :direction,  :values => %w(E W), :allow_nil => true
@@ -50,6 +50,18 @@ describe Apartment do
         end
         Apartment.tenants = [Unit]
       end
+    end
+  end
+  
+  describe 'Apartment.current interface' do
+    it 'should do sensible things with method missing' do
+      Apartment.setup do
+        partition :floor_id,   :references => 'Floor#number'
+      end
+      Apartment.current = {:floor_id => 1}
+      Apartment.current_floor_id.should == 1
+      Apartment.current_floor.should == Floor.find(1)
+      
     end
   end
   

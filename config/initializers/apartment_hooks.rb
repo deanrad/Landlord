@@ -3,7 +3,7 @@ class Apartment
     alias :really_set_current= :current=
     # Does the actual ActiveRecord magic after the setting of the apartment
     def current= apt
-      $stderr.puts "ApartmentHooks -> Apartment#current"
+      # $stderr.puts "ApartmentHooks -> Apartment#current"
       self.really_set_current = apt
       
       tenants.each do |t|
